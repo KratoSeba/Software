@@ -10,36 +10,26 @@ from duckietown_msgs.msg import Twist2DStamped
 class Movimiento(object):
 	def __init__(self):
 		super(Movimiento, self).__init__()
-		self.subscriber = rospy.Subscriber("/duckiebot/joy",Joy,self.callback)
-		self.publisher = rospy.Publisher("/duckiebot/wheels_driver_node/car_cmd",Twist2DStamped,queue_size=10)
+		self.subscriber = rospy.Subscriber("/duckiebot/joy", Joy, self.callback)
+		self.publisher = rospy.Publisher("/duckiebot/wheels_driver_node/car_cmd", Twist2DStamped, queue_size=10)
 		self.twist = Twist2DStamped()
 
 
 
 
 	def callback(self,msg):
-		velocidad = msg.axes[1]	
-		if velocidad > 0:
-			self.twist.v = 1
-			print 1
-		elif velocidad < 0:
-			self.twist.v = -1
-			print 2
-		else:
-			self.twist.v = 0
-			print 3
+		velocidad = msg.axes[1]*10
+		self.twist.v = velocidad
+		print "Velocidad actual:", self.twist.v
 
 		self.publisher.publish(self.twist)
 
-		print velocidad
-
 
 def main():
+
 	rospy.init_node('test') #creacion y registro del nodo!
 
-	obj = Movimiento() # Crea un objeto del tipo Template, cuya definicion se encuentra arriba
-
-	#objeto.publicar() #llama al metodo publicar del objeto obj de tipo Template
+	obj = Movimiento()
 
 	rospy.spin() #funcion de ROS que evita que el programa termine -  se debe usar en  Subscribers
 
