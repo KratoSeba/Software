@@ -36,7 +36,7 @@ class Movimiento(object):
 
 def main():
 
-	rospy.init_node('test') #creacion y registro del nodo!
+	rospy.init_node("Controlador") #creacion y registro del nodo!
 
 	obj = Movimiento()
 

@@ -1,34 +1,38 @@
 #!/usr/bin/env python
 
+from time import sleep
 import rospy #importar ros para python
 from std_msgs.msg import String, Int32 # importar mensajes de ROS tipo String y tipo Int32
 from geometry_msgs.msg import Twist # importar mensajes de ROS tipo geometry / Twist
 
 
-class Move(object):
+class ControlTortuga(object):
 	def __init__(self, args):
-		super(Move, self).__init__()
+		super(ControlTortuga, self).__init__()
 		self.publisher = rospy.Publisher("/turtle1/cmd_vel", Twist, queue_size=10)
-		self.subscriber = rospy.Subscriber("/chatter", Int32, self.mover)
 		self.twist = Twist()
+                PI = 3.1415926535897
 
-	def twist_publicar(self, vel):
-		self.twist.linear.x = vel
-		self.publisher.publish(self.twist)
+                velocidad = PI / 6
+                angulo = PI / 2
 
-	def mover(self, msg):
-		num = msg.data
-		if num % 2 == 0:
-			vel = 1
-		else:
-			vel = -1
-		self.twist_publicar(vel)
+                t0 = rospy.Time.now().to_sec()
+                anguloActual = 0
+                self.twist.angular.z = velocidad
 
+                while anguloActual < angulo:
+                        self.publisher.publish(self.twist)
+                        t1 = rospy.Time.now().to_sec()
+                        anguloActual = velocidad*(t1-t0)
+
+                self.twist.angular.z = 0
+                self.publisher.publish(self.twist)
+                        
 
 def main():
-	rospy.init_node('Move') #creacion y registro del nodo!
+	rospy.init_node('ControlTortuga') #creacion y registro del nodo!
 
-	obj = Move('args') # Crea un objeto del tipo Template, cuya definicion se encuentra arriba
+	obj = ControlTortuga('args') # Crea un objeto del tipo Template, cuya definicion se encuentra arriba
 
 	rospy.spin() #funcion de ROS que evita que el programa termine -  se debe usar en  Subscribers
 
