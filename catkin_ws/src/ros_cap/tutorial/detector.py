@@ -15,25 +15,25 @@ class Template(object):
                 self.bridge = CvBridge()        
 
         def procesador(self, original):
-                cv_img = self.bridge.imgmsg_to_cv2(original, "bgr8")
+                cv_img = self.bridge.imgmsg_to_cv2(original, "bgr8") # Pasar imagen de la camara a imagen cv2
 
-                mask = cv2.inRange(cv_img, (10,75,75), (45,255,255))
+                mask = cv2.inRange(cv_img, (20,100,100), (50,255,255)) # Mascara para filtrar amarillo
 
-                kernel = np.ones((5,5),np.uint8)
-                cv2.erode(mask, kernel, iterations=1)
-                cv2.dilate(mask, kernel, iterations=1)
+                kernel = np.ones((5,5),np.uint8) # Matriz para erosion y dilatacion
+                cv2.erode(mask, kernel, iterations=5)
+                cv2.dilate(mask, kernel, iterations=5)
 
                 
-                image_out = cv2.bitwise_and(cv_img, cv_img, mask=mask)
-                contour, hierarchy, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                image_out = cv2.bitwise_and(cv_img, cv_img, mask=mask) # Aplicar mascara
+                contours, hierarchy, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) # Contorno y... jerarquia?
                 
-                x,y,w,h = cv2.boundingRect(contour)
-                cv2.rectangle(image_out, (x,y), (x+w,y+h), (255,255,0), 2)                         
-                print x,y,w,h
-                actual = self.bridge.cv2_to_imgmsg(image_out, "bgr8")
-                image_out = cv2.flip(image_out, 1)
+                x,y,w,h = cv2.boundingRect(contours) # x, y, width, height
+                cv2.rectangle(cv_img, (x,y), (x+w,y+h), (255,255,0), 2) # Crear rectangulo en la imagen original
                 
-                self.publisher.publish(actual)
+                ###### Deben ir siempre juntos ######
+                image_out = cv2.flip(image_out, 1) # Imagen modo espejo
+                actual = self.bridge.cv2_to_imgmsg(cv_img, "bgr8") # Imagen final de cv2 a imagen de "camara"?
+                self.publisher.publish(actual) # Publicar la imagen
 
 
 def main():
