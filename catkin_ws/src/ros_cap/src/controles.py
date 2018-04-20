@@ -18,9 +18,9 @@ class Movimiento(object):
 
 
 	def callback(self,msg):
-		velocidad = msg.axes[1] * 0.75
-		omega = msg.axes[3] * 8
-		freno = msg.buttons[5]
+		velocidad = msg.axes[1] * 0.75  # VELOCIDAD LINEAR
+		omega = msg.axes[3] * 8         # VELOCIDAD ANGULAR
+		freno = msg.buttons[5]          # FRENO
 		
 		self.twist.v = velocidad
 		self.twist.omega = omega
@@ -30,6 +30,7 @@ class Movimiento(object):
 		if freno == 1:
 			self.twist.v = 0
 			self.twist.omega = 0
+			
 		print freno
 		self.publisher.publish(self.twist)
 
