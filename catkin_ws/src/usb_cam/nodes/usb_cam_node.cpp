@@ -103,7 +103,7 @@ public:
     node_.param("pixel_format", pixel_format_name_, std::string("mjpeg"));
     // enable/disable autofocus
     node_.param("autofocus", autofocus_, false);
-    node_.param("focus", focus_, -1); //0-255, -1 "leave alone"
+    node_.param("focus", focus_, 125); //0-255, -1 "leave alone"
     // enable/disable autoexposure
     node_.param("autoexposure", autoexposure_, true);
     node_.param("exposure", exposure_, 100);

@@ -1131,46 +1131,7 @@ void UsbCam::grab_image()
   image_->is_new = 1;
 }
 
-// enables/disables auto focus
-void UsbCam::set_auto_focus(int value)
-{
-  struct v4l2_queryctrl queryctrl;
-  struct v4l2_ext_control control;
 
-  memset(&queryctrl, 0, sizeof(queryctrl));
-  queryctrl.id = V4L2_CID_FOCUS_AUTO;
-
-  if (-1 == xioctl(fd_, VIDIOC_QUERYCTRL, &queryctrl))
-  {
-    if (errno != EINVAL)
-    {
-      perror("VIDIOC_QUERYCTRL");
-      return;
-    }
-    else
-    {
-      ROS_INFO("V4L2_CID_FOCUS_AUTO is not supported");
-      return;
-    }
-  }
-  else if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-  {
-    ROS_INFO("V4L2_CID_FOCUS_AUTO is not supported");
-    return;
-  }
-  else
-  {
-    memset(&control, 0, sizeof(control));
-    control.id = V4L2_CID_FOCUS_AUTO;
-    control.value = value;
-
-    if (-1 == xioctl(fd_, VIDIOC_S_CTRL, &control))
-    {
-      perror("VIDIOC_S_CTRL");
-      return;
-    }
-  }
-}
 
 /**
 * Set video device parameter via call to v4l-utils.
