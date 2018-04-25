@@ -18,10 +18,10 @@ class Template(object):
 		cv2.createTrackbar('S MIN','HSV Config + Erode + Dilate',130,255,nothing)
 		cv2.createTrackbar('V MIN','HSV Config + Erode + Dilate',150,255,nothing)
 		cv2.createTrackbar('Erode','HSV Config + Erode + Dilate',3,10,nothing)
-		cv2.createTrackbar('Dilate','HSV Config + Erode + Dilate',0,10,nothing)
+		cv2.createTrackbar('Dilate','HSV Config + Erode + Dilate',6,10,nothing)
 		cv2.createTrackbar('H MAX','HSV Config + Erode + Dilate',40,180,nothing)
 		cv2.createTrackbar('S MAX','HSV Config + Erode + Dilate',255,255,nothing)
-		cv2.createTrackbar('V MAX','HSV Config + Erode + Dilate',195,255,nothing)
+		cv2.createTrackbar('V MAX','HSV Config + Erode + Dilate',255,255,nothing)
 
 
 	def actualizar(self):
