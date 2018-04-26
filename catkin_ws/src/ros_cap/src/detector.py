@@ -10,12 +10,12 @@ from sensor_msgs.msg import Image
 class Detector(object):
         def __init__(self):
                 super(Detector, self).__init__()
-                self.subscriber = rospy.Subscriber("/usb_cam/image_raw", Image, self.procesador) # Nodo camara
-                self.subscriberConfig = rospy.Subscriber("/trackbarUSBCAM", Int32MultiArray, self.update) # Nodo que configura erode, dilate y hsv
+                self.subscriber = rospy.Subscriber("/duckiebot/camera_node/image/raw", Image, self.procesador) # Nodo camara
+                #self.subscriberConfig = rospy.Subscriber("/trackbarUSBCAM", Int32MultiArray, self.update) # Nodo que configura erode, dilate y hsv
                 self.publisher = rospy.Publisher("/detector", Image, queue_size=10) # Publicador de la nueva imagen
                 self.bridge = CvBridge()
 
-                self.hsved = [] # Aqui se reciben los valores del trackbar
+                self.hsved = [20,130,150,1,2,40,225,225] # Aqui se reciben los valores del trackbar
 
         def update(self, msg): # Del nodo trackbar
             self.hsved = msg.data
@@ -27,9 +27,9 @@ class Detector(object):
                 mask = cv2.inRange(hsvImage, (self.hsved[0],self.hsved[1],self.hsved[2]), (self.hsved[5],self.hsved[6],self.hsved[7])) # Mascara para filtrar amarillo HSV
                 
                 kernel = np.ones((5,5),np.uint8) # Matriz para erosion y dilatacion
-                erosion = cv2.erode(hsvImage, kernel, iterations=self.hsved[3])
+                erosion = cv2.erode(mask, kernel, iterations=self.hsved[3])
                 dilated = cv2.dilate(erosion, kernel, iterations=self.hsved[4])
-                image_out = cv2.bitwise_and(dilated, cv_img, mask=mask) # Aplicar mascara
+                image_out = cv2.bitwise_and(cv_img, cv_img, mask=dilated) # Aplicar mascara
 
                 _, contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # Contornos externos, Aproximacion simple
 
