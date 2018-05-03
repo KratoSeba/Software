@@ -22,14 +22,14 @@ class Movimiento(object):
 		omega = msg.axes[3] * 8         # VELOCIDAD ANGULAR
 		freno = msg.buttons[5]          # FRENO
 		
-		self.twist.v = velocidad
-		self.twist.omega = omega
-		print "Velocidad:", self.twist.v
-		print "Omega:", self.twist.omega
-		
 		if freno == 1:
 			self.twist.v = 0
 			self.twist.omega = 0
+		else:
+			self.twist.v = velocidad
+			self.twist.omega = omega
+			print "Velocidad:", self.twist.v
+			print "Omega:", self.twist.omega
 			
 		print freno
 		self.publisher.publish(self.twist)
