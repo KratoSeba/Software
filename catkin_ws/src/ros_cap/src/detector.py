@@ -13,9 +13,11 @@ class Detector(object):
                 self.subscriber = rospy.Subscriber("/duckiebot/camera_node/image/rect", Image, self.procesador) # Nodo camara
                 #self.subscriberConfig = rospy.Subscriber("/trackbarUSBCAM", Int32MultiArray, self.update) # Nodo que configura erode, dilate y hsv
                 self.publisher = rospy.Publisher("/detector", Image, queue_size=10) # Publicador de la nueva imagen
+                #self.distancePublisher = rospy.Publisher("/duckDistance", Int32, queue_size=10) # Publicador distancia patos
                 self.bridge = CvBridge()
 
                 self.hsved = [20,140,110,1,1,40,225,225] # Aqui se reciben los valores del trackbar
+                #self.distance = 0                        # Distancia de los patos
 
         def update(self, msg): # Del nodo trackbar
             self.hsved = msg.data
@@ -33,25 +35,23 @@ class Detector(object):
 
                 _, contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # Contornos externos, Aproximacion simple
 
-                rects = []
                 for cnt in contours:
-                	x,y,w,h = cv2.boundingRect(cnt) # x, y, width, height
-
-                	fx = 170.8734424022098
-                	fy = 172.04387162468095
-                	cx = 157.0965555137086
-                	cy = 113.2325768841192
-                	dPx = 3.5
-                	dPy = 3
-
-                	z = fy * dPy / h
-                	xx = ( (x+w/2) - cx ) * z / fx
-                	yy = ( (y+h/2) - cy ) * z / fy
-
-                	print z
-                	
+                	x,y,w,h = cv2.boundingRect(cnt) # x, y, width, height                	
                 	if w * h >= 250: # Area minima del rectangulo = 1000 pixeles
-                		#print (x, y)
+                    
+                        fx = 170.8734424022098
+                        fy = 172.0438716246809
+                        cx = 157.0965555137086
+                        cy = 113.2325768841192
+                        dPx = 3.5
+                        dPy = 3
+
+                        z = fy * dPy / h
+                        xx = ( (x+w/2) - cx ) * z / fx
+                        yy = ( (y+h/2) - cy ) * z / fy
+
+                        print z
+
                 		cv2.rectangle(image_out, (x,y), (x+w,y+h), (255,255,0), 2) # Crear rectangulo en la imagen original
 
                 # Ver mascara: image_out | Ver imagen original: cv-img #
@@ -59,7 +59,9 @@ class Detector(object):
                 ###### Deben ir siempre juntos ######
                 espejo = cv2.flip(cv_img, 1) # Imagen modo espejo
                 actual = self.bridge.cv2_to_imgmsg(image_out, "bgr8") # Imagen final de cv2 a imagen de "camara"?
+                #self.distancePublisher.publish(self.distance) # Publicar la distancia del pato
                 self.publisher.publish(actual) # Publicar la imagen
+                
 
 
 def main():
